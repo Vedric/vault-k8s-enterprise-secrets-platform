@@ -1,0 +1,42 @@
+# Terraform
+*.tfstate
+*.tfstate.backup
+*.tfstate.*.backup
+.terraform/
+crash.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+*.tfplan
+
+# .terraform.lock.hcl is intentionally ignored for this portfolio project
+# to avoid platform-specific lock file churn across contributors.
+# In a team production project, this file SHOULD be committed.
+.terraform.lock.hcl
+
+# Secrets -- never commit these
+.env
+.env.*
+*.pem
+*.key
+secrets/
+credentials.json
+**/kubeconfig
+*.kubeconfig
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Python
+__pycache__/
+*.pyc
+.venv/
