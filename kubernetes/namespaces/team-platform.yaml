@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: team-platform
+  labels:
+    team: platform
+    purpose: infrastructure
+    vault-injection: enabled
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: vault-sa
+  namespace: team-platform
+  labels:
+    team: platform
+  annotations:
+    # Used by Vault Kubernetes auth method to bind this SA to the team-platform role
+    vault.hashicorp.com/role: "team-platform"

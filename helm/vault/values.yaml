@@ -1,0 +1,143 @@
+# Vault Helm chart values for HA deployment with Raft storage and Azure Key Vault auto-unseal.
+# Chart: hashicorp/vault (https://github.com/hashicorp/vault-helm)
+#
+# Install with:
+#   helm repo add hashicorp https://helm.releases.hashicorp.com
+#   helm install vault hashicorp/vault -n vault --create-namespace -f helm/vault/values.yaml
+
+global:
+  enabled: true
+  tlsDisable: true  # TLS termination handled by ingress/service mesh in production
+
+server:
+  image:
+    repository: hashicorp/vault
+    tag: "1.17.6"
+
+  # Resource limits tuned for Standard_B2s nodes (2 vCPU, 4 GiB RAM)
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "250m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+
+  # HA configuration with Raft integrated storage
+  ha:
+    enabled: true
+    replicas: 3
+
+    raft:
+      enabled: true
+      setNodeId: true
+
+      config: |
+        ui = true
+
+        listener "tcp" {
+          tls_disable     = 1
+          address         = "[::]:8200"
+          cluster_address = "[::]:8201"
+
+          # Enable request logging for audit
+          telemetry {
+            unauthenticated_metrics_access = true
+          }
+        }
+
+        storage "raft" {
+          path = "/vault/data"
+
+          retry_join {
+            leader_api_addr = "http://vault-0.vault-internal:8200"
+          }
+          retry_join {
+            leader_api_addr = "http://vault-1.vault-internal:8200"
+          }
+          retry_join {
+            leader_api_addr = "http://vault-2.vault-internal:8200"
+          }
+        }
+
+        # Auto-unseal via Azure Key Vault
+        # Values are injected from Terraform outputs
+        seal "azurekeyvault" {
+          tenant_id      = "REPLACE_WITH_TENANT_ID"
+          vault_name     = "REPLACE_WITH_KEYVAULT_NAME"
+          key_name       = "vault-unseal-key"
+        }
+
+        service_registration "kubernetes" {}
+
+        # Telemetry for Prometheus scraping (Phase 6)
+        telemetry {
+          prometheus_retention_time = "30s"
+          disable_hostname          = true
+        }
+
+  # Vault data storage on Azure Managed Disks
+  dataStorage:
+    enabled: true
+    size: 10Gi
+    storageClass: managed-csi
+
+  # Audit log storage
+  auditStorage:
+    enabled: true
+    size: 5Gi
+    storageClass: managed-csi
+
+  # Service account for workload identity
+  serviceAccount:
+    create: true
+    name: vault
+    annotations:
+      azure.workload.identity/client-id: "REPLACE_WITH_VAULT_IDENTITY_CLIENT_ID"
+
+  # Pod annotations for workload identity
+  annotations:
+    azure.workload.identity/use: "true"
+
+  # Pod labels for workload identity webhook
+  labels:
+    azure.workload.identity/use: "true"
+
+  # Anti-affinity: spread Vault pods across nodes for HA
+  affinity:
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: vault
+              component: server
+          topologyKey: kubernetes.io/hostname
+
+  # Readiness probe
+  readinessProbe:
+    enabled: true
+    path: "/v1/sys/health?standbyok=true&sealedcode=204&uninitcode=204"
+
+  # Liveness probe
+  livenessProbe:
+    enabled: true
+    path: "/v1/sys/health?standbyok=true"
+    initialDelaySeconds: 60
+
+# Vault Agent Injector for sidecar secret injection (Phase 5)
+injector:
+  enabled: true
+  replicas: 1
+
+  resources:
+    requests:
+      memory: "64Mi"
+      cpu: "50m"
+    limits:
+      memory: "128Mi"
+      cpu: "250m"
+
+# Vault UI
+ui:
+  enabled: true
+  serviceType: ClusterIP

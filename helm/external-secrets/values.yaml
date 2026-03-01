@@ -1,0 +1,47 @@
+# External Secrets Operator Helm chart values
+# Chart: external-secrets/external-secrets
+# (https://github.com/external-secrets/external-secrets)
+#
+# Install with:
+#   helm repo add external-secrets https://charts.external-secrets.io
+#   helm install external-secrets external-secrets/external-secrets \
+#     -n external-secrets --create-namespace -f helm/external-secrets/values.yaml
+
+# Operator configuration
+replicaCount: 1
+
+# Resource limits tuned for Standard_B2s nodes
+resources:
+  requests:
+    cpu: "50m"
+    memory: "64Mi"
+  limits:
+    cpu: "100m"
+    memory: "128Mi"
+
+# Webhook for validating ExternalSecret CRDs
+webhook:
+  replicaCount: 1
+  resources:
+    requests:
+      cpu: "50m"
+      memory: "64Mi"
+    limits:
+      cpu: "100m"
+      memory: "128Mi"
+
+# Cert controller for managing webhook TLS certificates
+certController:
+  replicaCount: 1
+  resources:
+    requests:
+      cpu: "50m"
+      memory: "64Mi"
+    limits:
+      cpu: "100m"
+      memory: "128Mi"
+
+# Service account
+serviceAccount:
+  create: true
+  name: external-secrets
