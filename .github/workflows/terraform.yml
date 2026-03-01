@@ -87,15 +87,25 @@ jobs:
       ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
       ARM_USE_OIDC: "true"
     steps:
+      - name: Check Azure credentials
+        run: |
+          if [ -z "$ARM_CLIENT_ID" ]; then
+            echo "::notice::Azure credentials not configured. Skipping plan."
+            echo "SKIP_PLAN=true" >> "$GITHUB_ENV"
+          fi
+
       - name: Checkout
+        if: env.SKIP_PLAN != 'true'
         uses: actions/checkout@v4
 
       - name: Setup Terraform
+        if: env.SKIP_PLAN != 'true'
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: ${{ env.TERRAFORM_VERSION }}
 
       - name: Azure Login (OIDC)
+        if: env.SKIP_PLAN != 'true'
         uses: azure/login@v2
         with:
           client-id: ${{ secrets.ARM_CLIENT_ID }}
@@ -103,10 +113,12 @@ jobs:
           subscription-id: ${{ secrets.ARM_SUBSCRIPTION_ID }}
 
       - name: Terraform Init
+        if: env.SKIP_PLAN != 'true'
         run: terraform init -backend-config=environments/dev/backend.tfvars
         working-directory: ${{ env.WORKING_DIR }}
 
       - name: Terraform Plan
+        if: env.SKIP_PLAN != 'true'
         id: plan
         run: |
           terraform plan \
@@ -117,7 +129,7 @@ jobs:
 
       - name: Comment Plan on PR
         uses: actions/github-script@v7
-        if: github.event_name == 'pull_request'
+        if: env.SKIP_PLAN != 'true' && github.event_name == 'pull_request'
         with:
           script: |
             const fs = require('fs');
@@ -142,15 +154,25 @@ jobs:
       ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
       ARM_USE_OIDC: "true"
     steps:
+      - name: Check Azure credentials
+        run: |
+          if [ -z "$ARM_CLIENT_ID" ]; then
+            echo "::notice::Azure credentials not configured. Skipping apply."
+            echo "SKIP_APPLY=true" >> "$GITHUB_ENV"
+          fi
+
       - name: Checkout
+        if: env.SKIP_APPLY != 'true'
         uses: actions/checkout@v4
 
       - name: Setup Terraform
+        if: env.SKIP_APPLY != 'true'
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: ${{ env.TERRAFORM_VERSION }}
 
       - name: Azure Login (OIDC)
+        if: env.SKIP_APPLY != 'true'
         uses: azure/login@v2
         with:
           client-id: ${{ secrets.ARM_CLIENT_ID }}
@@ -158,10 +180,12 @@ jobs:
           subscription-id: ${{ secrets.ARM_SUBSCRIPTION_ID }}
 
       - name: Terraform Init
+        if: env.SKIP_APPLY != 'true'
         run: terraform init -backend-config=environments/dev/backend.tfvars
         working-directory: ${{ env.WORKING_DIR }}
 
       - name: Terraform Apply
+        if: env.SKIP_APPLY != 'true'
         run: |
           terraform apply \
             -var-file=environments/dev/terraform.tfvars \
