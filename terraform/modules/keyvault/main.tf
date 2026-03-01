@@ -111,5 +111,12 @@ resource "azurerm_key_vault_key" "vault_unseal" {
     "unwrapKey",
   ]
 
+  # Rotate the unseal key annually
+  expiration_date = timeadd(timestamp(), "8760h")
+
   depends_on = [azurerm_key_vault_access_policy.deployer]
+
+  lifecycle {
+    ignore_changes = [expiration_date]
+  }
 }

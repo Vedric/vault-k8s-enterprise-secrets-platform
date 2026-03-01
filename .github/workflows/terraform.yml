@@ -73,7 +73,7 @@ jobs:
           framework: terraform
           output_format: sarif
           soft_fail: false
-          skip_check: CKV_AZURE_35
+          config_file: ${{ env.WORKING_DIR }}/.checkov.yml
 
   plan:
     name: "Terraform Plan"
