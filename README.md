@@ -1,6 +1,6 @@
 # Vault K8s Enterprise Secrets Platform
 
-[![Terraform CI/CD](https://github.com/<owner>/vault-k8s-enterprise-secrets-platform/actions/workflows/terraform.yml/badge.svg)](https://github.com/<owner>/vault-k8s-enterprise-secrets-platform/actions/workflows/terraform.yml)
+[![Terraform CI/CD](https://github.com/Vedric/vault-k8s-enterprise-secrets-platform/actions/workflows/terraform.yml/badge.svg)](https://github.com/Vedric/vault-k8s-enterprise-secrets-platform/actions/workflows/terraform.yml)
 ![Terraform](https://img.shields.io/badge/Terraform-%3E%3D1.5-blueviolet)
 ![Vault](https://img.shields.io/badge/Vault-1.17+-yellow)
 ![Kubernetes](https://img.shields.io/badge/Kubernetes-1.30-blue)

@@ -24,7 +24,7 @@ spec:
             description: >
               Vault instance {{ $labels.instance }} has been sealed for more than 1 minute.
               Refer to docs/runbooks/seal-recovery.md for recovery procedures.
-            runbook_url: "https://github.com/<owner>/vault-k8s-enterprise-secrets-platform/blob/main/docs/runbooks/seal-recovery.md"
+            runbook_url: "https://github.com/Vedric/vault-k8s-enterprise-secrets-platform/blob/main/docs/runbooks/seal-recovery.md"
 
         # Raft cluster has lost a peer — degraded HA
         - alert: VaultRaftPeerLost
