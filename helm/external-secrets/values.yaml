@@ -10,7 +10,7 @@
 # Operator configuration
 replicaCount: 1
 
-# Resource limits tuned for Standard_B2s nodes
+# Resource limits tuned for Standard_B2s_v2 nodes
 resources:
   requests:
     cpu: "50m"

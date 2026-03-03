@@ -1,3 +1,8 @@
+# Auto-detect deployer's public IP for Key Vault firewall rules
+data "http" "deployer_ip" {
+  url = "https://api.ipify.org"
+}
+
 locals {
   common_tags = merge(
     {
@@ -56,7 +61,8 @@ module "keyvault" {
     module.networking.aks_subnet_id,
     module.networking.vault_subnet_id,
   ]
-  tags = local.common_tags
+  deployer_ip_addresses = ["${chomp(data.http.deployer_ip.response_body)}/32"]
+  tags                  = local.common_tags
 }
 
 module "aks" {

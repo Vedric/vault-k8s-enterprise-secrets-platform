@@ -14,7 +14,7 @@ server:
     repository: hashicorp/vault
     tag: "1.17.6"
 
-  # Resource limits tuned for Standard_B2s nodes (2 vCPU, 4 GiB RAM)
+  # Resource limits tuned for Standard_B2s_v2 nodes (2 vCPU, 8 GiB RAM)
   resources:
     requests:
       memory: "256Mi"
@@ -103,15 +103,18 @@ server:
   labels:
     azure.workload.identity/use: "true"
 
-  # Anti-affinity: spread Vault pods across nodes for HA
+  # Anti-affinity: prefer spreading Vault pods across nodes for HA
+  # Using soft anti-affinity to allow 3 replicas on 2 nodes (dev quota constraint)
   affinity:
     podAntiAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        - labelSelector:
-            matchLabels:
-              app.kubernetes.io/name: vault
-              component: server
-          topologyKey: kubernetes.io/hostname
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchLabels:
+                app.kubernetes.io/name: vault
+                component: server
+            topologyKey: kubernetes.io/hostname
 
   # Readiness probe
   readinessProbe:

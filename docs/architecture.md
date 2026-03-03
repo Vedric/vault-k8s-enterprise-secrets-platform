@@ -18,7 +18,7 @@ covering component interactions, network topology, identity flows, and storage d
 |  |  |                       | |  | - Blob Container (tfstate) | |
 |  |  | snet-aks (10.0.1.0/24)| |  +----------------------------+ |
 |  |  |   AKS Cluster         | |                                  |
-|  |  |   (3x B2s nodes)      | |                                  |
+|  |  |   (2x B2s_v2 nodes)   | |                                  |
 |  |  |                       | |                                  |
 |  |  | snet-vault             | |                                  |
 |  |  |   (10.0.2.0/24)       | |                                  |
@@ -55,8 +55,8 @@ Azure CNI assigns real VNet IP addresses to every pod. This is critical because:
 1. **Key Vault service endpoints** restrict access by source subnet. With overlay networking,
    pod traffic would appear to originate from node IPs only, reducing isolation granularity.
 2. **NSG rules** can target specific pod IPs for fine-grained network segmentation.
-3. **Subnet sizing**: A /24 provides 251 usable IPs. With 3 nodes and a max of 30 pods/node,
-   peak usage is ~93 IPs, leaving headroom for scaling.
+3. **Subnet sizing**: A /24 provides 251 usable IPs. With 2 nodes and a max of 30 pods/node,
+   peak usage is ~62 IPs, leaving significant headroom for scaling.
 
 ### Network Security Groups
 
@@ -122,7 +122,7 @@ This eliminates the need for any static credentials in the Vault configuration.
 
 - **Leader election**: Vault uses the Raft consensus protocol. One node is elected leader;
   the other two are followers. All writes go through the leader and are replicated.
-- **Quorum**: Requires 2/3 nodes to be available (majority). The cluster survives one node
+- **Quorum**: Requires 2/3 replicas to be available (majority). The cluster survives one pod
   failure without data loss.
 - **Failover**: If the leader fails, remaining nodes elect a new leader within seconds.
   During election, the cluster is temporarily read-only.

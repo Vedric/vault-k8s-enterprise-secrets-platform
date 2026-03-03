@@ -3,7 +3,7 @@
 [![Terraform CI/CD](https://github.com/Vedric/vault-k8s-enterprise-secrets-platform/actions/workflows/terraform.yml/badge.svg)](https://github.com/Vedric/vault-k8s-enterprise-secrets-platform/actions/workflows/terraform.yml)
 ![Terraform](https://img.shields.io/badge/Terraform-%3E%3D1.5-blueviolet)
 ![Vault](https://img.shields.io/badge/Vault-1.17+-yellow)
-![Kubernetes](https://img.shields.io/badge/Kubernetes-1.30-blue)
+![Kubernetes](https://img.shields.io/badge/Kubernetes-1.32-blue)
 
 Enterprise-grade HashiCorp Vault secrets management platform on Azure Kubernetes Service (AKS). This project demonstrates a production-ready deployment with HA Raft storage, auto-unseal via Azure Key Vault, path-based multi-tenancy, dynamic secret rotation, and dual secret injection patterns (Vault Agent Sidecar + External Secrets Operator).
 
@@ -16,7 +16,7 @@ Enterprise-grade HashiCorp Vault secrets management platform on Azure Kubernetes
                         |                           |
         +---------------+---+   +---+---------------+---+
         |   AKS Cluster     |   | Azure Key Vault       |
-        | (3x B2s nodes)    |   | (Auto-Unseal)         |
+        | (2x B2s_v2 nodes) |   | (Auto-Unseal)         |
         |                   |   |                       |
         | +---------------+ |   | - RSA 2048 unseal key |
         | | vault-0 (HA)  | |   | - Managed Identity    |
@@ -68,7 +68,7 @@ secret/
 | [Terraform](https://www.terraform.io/) | >= 1.5 | Infrastructure provisioning |
 | [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/) | >= 2.50 | Azure authentication and resource management |
 | [Helm](https://helm.sh/) | >= 3.12 | Kubernetes package management |
-| [kubectl](https://kubernetes.io/docs/tasks/tools/) | >= 1.30 | Kubernetes cluster interaction |
+| [kubectl](https://kubernetes.io/docs/tasks/tools/) | >= 1.32 | Kubernetes cluster interaction |
 | [bats-core](https://github.com/bats-core/bats-core) | >= 1.10 | Shell-based test framework |
 | [tflint](https://github.com/terraform-linters/tflint) | >= 0.50 | Terraform linting |
 | [checkov](https://www.checkov.io/) | >= 3.0 | Infrastructure security scanning |
@@ -122,12 +122,12 @@ az aks get-credentials \
 | Component | Monthly Cost (EUR) |
 |-----------|--------------------|
 | AKS control plane | 0 (free tier) |
-| 3x Standard_B2s nodes | ~85 |
+| 2x Standard_B2s_v2 nodes | ~65 |
 | Azure Key Vault (standard) | < 2 |
-| Managed disks (3x 32GB LRS) | ~5 |
+| Managed disks (2x 32GB LRS) | ~3.5 |
 | Log Analytics workspace | ~5-10 |
-| **Total** | **~95-100** |
-| **Weekends only (~8h/week)** | **~15-20** |
+| **Total** | **~75-80** |
+| **Weekends only (~8h/week)** | **~12-15** |
 
 > Tip: Use `make destroy` to tear down infrastructure when not actively working.
 > Recreate with `make init && make plan && make apply` in ~15 minutes.

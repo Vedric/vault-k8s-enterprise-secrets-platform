@@ -30,7 +30,7 @@ skip-check:
   # requires disk encryption set.
   - CKV_AZURE_227
 
-  # CKV_AZURE_226: Ephemeral OS disks — Standard_B2s does not have a large
+  # CKV_AZURE_226: Ephemeral OS disks — Standard_B2s_v2 does not have a large
   # enough cache to support ephemeral OS disks (requires cache > OS disk size).
   - CKV_AZURE_226
 
@@ -38,13 +38,13 @@ skip-check:
   # portfolio. Production would use the Standard or Premium tier.
   - CKV_AZURE_170
 
-  # CKV_AZURE_168: Minimum 50 pods per node — B2s nodes with 4 GiB RAM
-  # cannot realistically run 50 pods. Default max_pods=30 is appropriate
-  # for this node size.
+  # CKV_AZURE_168: Minimum 50 pods per node — B2s_v2 nodes with 8 GiB RAM
+  # can handle more pods but 30 is still appropriate for 2-node dev cluster
+  # to avoid resource pressure.
   - CKV_AZURE_168
 
   # CKV_AZURE_232: Only critical pods on system nodes — requires a separate
-  # user node pool. With only 3 B2s nodes, splitting into system and user
+  # user node pool. With only 2 B2s_v2 nodes, splitting into system and user
   # pools is not cost-effective.
   - CKV_AZURE_232
 

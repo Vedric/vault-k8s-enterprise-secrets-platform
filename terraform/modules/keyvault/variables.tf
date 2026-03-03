@@ -18,6 +18,12 @@ variable "allowed_subnet_ids" {
   type        = list(string)
 }
 
+variable "deployer_ip_addresses" {
+  description = "List of deployer public IPs (CIDR notation) allowed through Key Vault firewall"
+  type        = list(string)
+  default     = []
+}
+
 variable "tags" {
   description = "Tags to apply to all resources"
   type        = map(string)
