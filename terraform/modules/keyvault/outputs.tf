@@ -32,3 +32,8 @@ output "vault_identity_principal_id" {
   description = "Principal ID of the Vault managed identity"
   value       = azurerm_user_assigned_identity.vault.principal_id
 }
+
+output "tenant_id" {
+  description = "Azure AD tenant ID"
+  value       = data.azurerm_client_config.current.tenant_id
+}

@@ -53,3 +53,13 @@ output "vault_identity_client_id" {
   description = "Client ID of the managed identity for Vault to access Key Vault"
   value       = module.keyvault.vault_identity_client_id
 }
+
+output "keyvault_name" {
+  description = "Name of the Azure Key Vault (for Vault seal configuration)"
+  value       = module.keyvault.key_vault_name
+}
+
+output "tenant_id" {
+  description = "Azure AD tenant ID (for Vault seal configuration)"
+  value       = module.keyvault.tenant_id
+}

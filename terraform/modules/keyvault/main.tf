@@ -14,7 +14,7 @@ locals {
 
 # -----------------------------------------------------------------------------
 # Managed Identity for Vault auto-unseal
-# This identity is bound to Vault pods via workload identity in Phase 2.
+# This identity is bound to Vault pods via workload identity federation.
 # -----------------------------------------------------------------------------
 
 resource "azurerm_user_assigned_identity" "vault" {
@@ -22,6 +22,21 @@ resource "azurerm_user_assigned_identity" "vault" {
   resource_group_name = var.resource_group_name
   location            = var.location
   tags                = var.tags
+}
+
+# -----------------------------------------------------------------------------
+# Federated Identity Credential
+# Links the Kubernetes service account "vault" in namespace "vault" to the
+# Azure managed identity via OIDC. This enables workload identity: Vault pods
+# exchange their projected SA token for an Azure AD token to access Key Vault.
+# -----------------------------------------------------------------------------
+
+resource "azurerm_federated_identity_credential" "vault" {
+  name      = "fic-vault-${var.resource_prefix}"
+  audience  = ["api://AzureADTokenExchange"]
+  issuer    = var.aks_oidc_issuer_url
+  parent_id = azurerm_user_assigned_identity.vault.id
+  subject   = "system:serviceaccount:vault:vault"
 }
 
 # -----------------------------------------------------------------------------
