@@ -1,0 +1,114 @@
+{
+  "__requires": [
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "10.0.0"
+    }
+  ],
+  "annotations": {
+    "list": []
+  },
+  "description": "HashiCorp Vault cluster overview — seal status, Raft peers, token metrics, and secret access patterns.",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "title": "Vault Seal Status",
+      "type": "stat",
+      "datasource": "Prometheus",
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 0 },
+      "targets": [
+        {
+          "expr": "vault_core_unsealed",
+          "legendFormat": "{{ instance }}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            { "options": { "0": { "text": "SEALED", "color": "red" } }, "type": "value" },
+            { "options": { "1": { "text": "UNSEALED", "color": "green" } }, "type": "value" }
+          ]
+        }
+      }
+    },
+    {
+      "title": "Raft Peers",
+      "type": "stat",
+      "datasource": "Prometheus",
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 0 },
+      "targets": [
+        {
+          "expr": "vault_raft_peers",
+          "legendFormat": "peers"
+        }
+      ]
+    },
+    {
+      "title": "Active Tokens",
+      "type": "stat",
+      "datasource": "Prometheus",
+      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 0 },
+      "targets": [
+        {
+          "expr": "vault_token_count",
+          "legendFormat": "tokens"
+        }
+      ]
+    },
+    {
+      "title": "Secret Operations Rate",
+      "type": "timeseries",
+      "datasource": "Prometheus",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 4 },
+      "targets": [
+        {
+          "expr": "rate(vault_secret_kv_count[5m])",
+          "legendFormat": "{{ mount_point }}"
+        }
+      ]
+    },
+    {
+      "title": "Vault Request Duration (p99)",
+      "type": "timeseries",
+      "datasource": "Prometheus",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 4 },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.99, rate(vault_core_handle_request_duration_milliseconds_bucket[5m]))",
+          "legendFormat": "p99"
+        }
+      ]
+    },
+    {
+      "title": "Audit Log Events",
+      "type": "timeseries",
+      "datasource": "Prometheus",
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 12 },
+      "targets": [
+        {
+          "expr": "rate(vault_audit_log_request_count[5m])",
+          "legendFormat": "requests"
+        },
+        {
+          "expr": "rate(vault_audit_log_response_count[5m])",
+          "legendFormat": "responses"
+        }
+      ]
+    }
+  ],
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": ["vault", "secrets", "infrastructure"],
+  "templating": { "list": [] },
+  "time": { "from": "now-1h", "to": "now" },
+  "title": "Vault Cluster Overview",
+  "uid": "vault-overview",
+  "version": 1
+}

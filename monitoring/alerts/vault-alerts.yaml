@@ -1,0 +1,95 @@
+# Prometheus alerting rules for Vault cluster monitoring.
+# Deploy to Prometheus via the kube-prometheus-stack Helm chart
+# or as a PrometheusRule CRD.
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: vault-alerts
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: vault
+    app.kubernetes.io/component: alerting
+spec:
+  groups:
+    - name: vault.rules
+      rules:
+        # Vault is sealed — immediate action required
+        - alert: VaultSealed
+          expr: vault_core_unsealed == 0
+          for: 1m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Vault instance {{ $labels.instance }} is sealed"
+            description: >
+              Vault instance {{ $labels.instance }} has been sealed for more than 1 minute.
+              Refer to docs/runbooks/seal-recovery.md for recovery procedures.
+            runbook_url: "https://github.com/Vedric/vault-k8s-enterprise-secrets-platform/blob/main/docs/runbooks/seal-recovery.md"
+
+        # Raft cluster has lost a peer — degraded HA
+        - alert: VaultRaftPeerLost
+          expr: vault_raft_peers < 3
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Vault Raft cluster has fewer than 3 peers"
+            description: >
+              The Vault Raft cluster reports {{ $value }} peers (expected 3).
+              The cluster can tolerate one node failure but is operating in
+              degraded mode. Investigate the missing node.
+
+        # No Vault leader — split-brain or total failure
+        - alert: VaultNoLeader
+          expr: vault_core_active == 0
+          for: 2m
+          labels:
+            severity: critical
+          annotations:
+            summary: "No active Vault leader detected"
+            description: >
+              No Vault instance reports as the active leader. This indicates
+              a potential split-brain or total cluster failure. Immediate
+              investigation required.
+
+        # High request latency
+        - alert: VaultHighLatency
+          expr: >
+            histogram_quantile(0.99,
+              rate(vault_core_handle_request_duration_milliseconds_bucket[5m])
+            ) > 500
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Vault p99 request latency exceeds 500ms"
+            description: >
+              Vault request latency (p99) has been above 500ms for 10 minutes.
+              This may indicate resource contention, storage I/O issues, or
+              excessive secret access patterns.
+
+        # Token count approaching limits
+        - alert: VaultHighTokenCount
+          expr: vault_token_count > 10000
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Vault token count exceeds 10,000"
+            description: >
+              The number of active Vault tokens is {{ $value }}. High token
+              counts may indicate token leakage (applications not revoking
+              tokens) or misconfigured TTLs.
+
+        # Audit log failures — compliance risk
+        - alert: VaultAuditFailure
+          expr: vault_audit_log_request_failure > 0
+          for: 1m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Vault audit logging is failing"
+            description: >
+              Vault is unable to write audit logs. When audit logging fails,
+              Vault blocks all requests to maintain compliance. This is a
+              critical issue requiring immediate attention.

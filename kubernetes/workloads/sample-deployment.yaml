@@ -1,0 +1,110 @@
+# Sample deployment demonstrating both secret injection patterns.
+# This file contains two deployments:
+# 1. sample-app-sidecar — uses Vault Agent Injector (sidecar)
+# 2. sample-app-eso — uses External Secrets Operator (K8s Secret)
+#
+# Deploy to the team-appdev namespace:
+#   kubectl apply -f kubernetes/workloads/sample-deployment.yaml
+
+---
+# Pattern 1: Vault Agent Sidecar Injection
+# Secrets are rendered in-memory at /vault/secrets/ — never written to etcd.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sample-app-sidecar
+  namespace: team-appdev
+  labels:
+    app: sample-app-sidecar
+    injection-pattern: sidecar
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sample-app-sidecar
+  template:
+    metadata:
+      labels:
+        app: sample-app-sidecar
+      annotations:
+        # Vault Agent Injector annotations
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/role: "team-appdev"
+        vault.hashicorp.com/agent-inject-secret-config: "secret/data/team-appdev/api/stripe-key"
+        vault.hashicorp.com/agent-inject-template-config: |
+          {{- with secret "secret/data/team-appdev/api/stripe-key" -}}
+          STRIPE_API_KEY={{ .Data.data.api_key }}
+          {{- end }}
+    spec:
+      serviceAccountName: vault-sa
+      containers:
+        - name: app
+          image: busybox:1.36
+          command: ["sh", "-c", "while true; do echo 'Secrets available at /vault/secrets/config:'; cat /vault/secrets/config 2>/dev/null || echo 'waiting for secrets...'; sleep 30; done"]
+          resources:
+            requests:
+              memory: "32Mi"
+              cpu: "10m"
+            limits:
+              memory: "64Mi"
+              cpu: "50m"
+
+---
+# Pattern 2: External Secrets Operator
+# Secrets are synced from Vault to a native Kubernetes Secret.
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: sample-app-secrets
+  namespace: team-appdev
+  labels:
+    app: sample-app-eso
+    injection-pattern: eso
+spec:
+  refreshInterval: "1m"
+  secretStoreRef:
+    name: vault-backend
+    kind: ClusterSecretStore
+  target:
+    name: sample-app-eso-secrets
+    creationPolicy: Owner
+  data:
+    - secretKey: STRIPE_API_KEY
+      remoteRef:
+        key: team-appdev/api/stripe-key
+        property: api_key
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sample-app-eso
+  namespace: team-appdev
+  labels:
+    app: sample-app-eso
+    injection-pattern: eso
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sample-app-eso
+  template:
+    metadata:
+      labels:
+        app: sample-app-eso
+    spec:
+      serviceAccountName: vault-sa
+      containers:
+        - name: app
+          image: busybox:1.36
+          command: ["sh", "-c", "while true; do echo \"STRIPE_API_KEY=$STRIPE_API_KEY\"; sleep 30; done"]
+          envFrom:
+            - secretRef:
+                name: sample-app-eso-secrets
+          resources:
+            requests:
+              memory: "32Mi"
+              cpu: "10m"
+            limits:
+              memory: "64Mi"
+              cpu: "50m"
