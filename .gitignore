@@ -9,6 +9,7 @@ override.tf.json
 *_override.tf
 *_override.tf.json
 *.tfplan
+tfplan
 
 # .terraform.lock.hcl is intentionally ignored for this portfolio project
 # to avoid platform-specific lock file churn across contributors.
