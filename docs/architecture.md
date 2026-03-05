@@ -95,8 +95,9 @@ AKS manages its own outbound rules for pulling images and communicating with the
 ### How Workload Identity Works
 
 1. AKS exposes an **OIDC issuer** endpoint (enabled via `oidc_issuer_enabled = true`).
-2. A **federated identity credential** links the Kubernetes service account to the Azure
-   managed identity (configured in Phase 2).
+2. A **federated identity credential** (`azurerm_federated_identity_credential.vault`) links
+   the Kubernetes service account `vault` in namespace `vault` to the Azure managed identity
+   `id-vault-vault-k8s-dev` via the AKS OIDC issuer.
 3. The workload identity webhook injects a projected service account token into the Vault pod.
 4. Vault exchanges this token for an Azure AD access token via the OIDC token exchange flow.
 5. The Azure AD token authenticates against Key Vault to perform `wrapKey`/`unwrapKey`
