@@ -1,4 +1,5 @@
 .PHONY: help init plan apply destroy fmt validate lint security-scan \
+	vault-deploy vault-deploy-upgrade vault-deploy-dry-run \
 	vault-init vault-configure test clean
 
 TERRAFORM_DIR := terraform
@@ -44,6 +45,15 @@ security-scan: ## Run Checkov security scan on Terraform code
 # ---------------------------------------------------------------------------
 # Vault (Phase 2+)
 # ---------------------------------------------------------------------------
+
+vault-deploy: ## Deploy Vault HA cluster to AKS via Helm
+	bash vault/scripts/deploy-vault.sh
+
+vault-deploy-upgrade: ## Upgrade existing Vault Helm release
+	bash vault/scripts/deploy-vault.sh --upgrade
+
+vault-deploy-dry-run: ## Preview Vault Helm deployment without installing
+	bash vault/scripts/deploy-vault.sh --dry-run
 
 vault-init: ## Initialize and unseal Vault cluster
 	bash vault/scripts/init-vault.sh
