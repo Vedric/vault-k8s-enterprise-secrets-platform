@@ -104,14 +104,25 @@ make apply
 az aks get-credentials \
   --resource-group rg-vault-k8s-dev \
   --name aks-vault-k8s-dev
+
+# 5. Deploy Vault HA cluster (reads Terraform outputs automatically)
+make vault-deploy
+
+# 6. Initialize the Vault cluster (first time only)
+make vault-init
+# ⚠ Store recovery keys and root token securely!
+
+# 7. Verify cluster health
+kubectl exec -n vault vault-0 -- vault status
+kubectl exec -n vault vault-0 -- vault operator raft list-peers
 ```
 
 ## Project Roadmap
 
 | Phase | Description | Status |
 |-------|-------------|--------|
-| 1 | Azure Infrastructure (Terraform: AKS, Key Vault, Networking, Monitoring) | In Progress |
-| 2 | Vault HA Deployment (Helm, Raft storage, auto-unseal, failover validation) | Planned |
+| 1 | Azure Infrastructure (Terraform: AKS, Key Vault, Networking, Monitoring) | Complete |
+| 2 | Vault HA Deployment (Helm, Raft storage, auto-unseal, failover validation) | In Progress |
 | 3 | Multi-Tenancy & Auth (KV v2 paths, HCL policies, Kubernetes auth method) | Planned |
 | 4 | Dynamic Secrets & Rotation (PostgreSQL credentials, PKI certificates) | Planned |
 | 5 | Secret Injection Patterns (Vault Agent Sidecar vs External Secrets Operator) | Planned |

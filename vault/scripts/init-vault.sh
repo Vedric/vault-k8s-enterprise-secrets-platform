@@ -83,6 +83,8 @@ init_vault() {
 
   if echo "${status}" | grep -q '"initialized": true'; then
     log "Vault is already initialized. Skipping init."
+    # Extract root token from user if already initialized
+    ROOT_TOKEN="${VAULT_TOKEN:-}"
     return 0
   fi
 
@@ -94,44 +96,65 @@ init_vault() {
       -recovery-threshold="${RECOVERY_THRESHOLD}" \
       -format=json)
 
+  ROOT_TOKEN=$(echo "${init_output}" | jq -r '.root_token')
+
   echo ""
   log "=== CRITICAL: STORE THESE SECURELY AND OFFLINE ==="
   echo "${init_output}" | jq -r '.recovery_keys_b64[]' | while IFS= read -r key; do
     echo "  Recovery Key: ${key}"
   done
-  echo "  Root Token: $(echo "${init_output}" | jq -r '.root_token')"
+  echo "  Root Token: ${ROOT_TOKEN}"
   log "=== END OF SENSITIVE OUTPUT ==="
   echo ""
 }
 
-join_raft_cluster() {
-  log "Joining follower nodes to the Raft cluster..."
-  for i in $(seq 1 $((VAULT_PODS - 1))); do
-    log "Joining vault-${i} to the Raft cluster..."
-    kubectl exec -n "${VAULT_NAMESPACE}" "vault-${i}" -- \
-      vault operator raft join "http://vault-0.vault-internal:8200" || true
+wait_for_unseal() {
+  log "Waiting for auto-unseal to complete on all nodes..."
+  local timeout=120
+  local elapsed=0
+  while [[ $elapsed -lt $timeout ]]; do
+    local unsealed=0
+    for i in $(seq 0 $((VAULT_PODS - 1))); do
+      local sealed
+      sealed=$(kubectl exec -n "${VAULT_NAMESPACE}" "vault-${i}" -- \
+        vault status -format=json 2>/dev/null | jq -r '.sealed' 2>/dev/null || echo "true")
+      if [[ "${sealed}" == "false" ]]; then
+        unsealed=$((unsealed + 1))
+      fi
+    done
+    if [[ "$unsealed" -ge "$VAULT_PODS" ]]; then
+      log "All ${VAULT_PODS} nodes are unsealed."
+      return 0
+    fi
+    log "  ${unsealed}/${VAULT_PODS} nodes unsealed... (${elapsed}s elapsed)"
+    sleep 5
+    elapsed=$((elapsed + 5))
   done
+  error "Timed out waiting for auto-unseal after ${timeout}s"
 }
 
 verify_cluster() {
   log "Verifying Raft cluster membership..."
-  kubectl exec -n "${VAULT_NAMESPACE}" vault-0 -- vault operator raft list-peers
+  kubectl exec -n "${VAULT_NAMESPACE}" vault-0 -- \
+    sh -c "VAULT_TOKEN=${ROOT_TOKEN} vault operator raft list-peers"
 
   log "Verifying Vault seal status..."
   for i in $(seq 0 $((VAULT_PODS - 1))); do
-    local sealed
+    local sealed ha_mode
     sealed=$(kubectl exec -n "${VAULT_NAMESPACE}" "vault-${i}" -- \
       vault status -format=json 2>/dev/null | jq -r '.sealed')
-    log "vault-${i}: sealed=${sealed}"
+    ha_mode=$(kubectl exec -n "${VAULT_NAMESPACE}" "vault-${i}" -- \
+      vault status -format=json 2>/dev/null | jq -r '.ha_mode // "unknown"')
+    log "vault-${i}: sealed=${sealed}, ha_mode=${ha_mode}"
   done
 }
 
 main() {
   log "Starting Vault cluster initialization..."
+  ROOT_TOKEN=""
   wait_for_pods
   init_vault
-  join_raft_cluster
-  sleep 10
+  wait_for_unseal
   verify_cluster
   log "Vault cluster initialization complete."
 }

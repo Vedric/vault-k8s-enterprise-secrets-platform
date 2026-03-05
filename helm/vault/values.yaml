@@ -1,9 +1,13 @@
 # Vault Helm chart values for HA deployment with Raft storage and Azure Key Vault auto-unseal.
 # Chart: hashicorp/vault (https://github.com/hashicorp/vault-helm)
 #
-# Install with:
-#   helm repo add hashicorp https://helm.releases.hashicorp.com
-#   helm install vault hashicorp/vault -n vault --create-namespace -f helm/vault/values.yaml
+# Deploy with:
+#   make vault-deploy
+# Or directly:
+#   bash vault/scripts/deploy-vault.sh
+#
+# REPLACE_WITH_* placeholders are substituted at deploy time from Terraform outputs.
+# Do not hardcode real values here.
 
 global:
   enabled: true
@@ -100,12 +104,13 @@ server:
     azure.workload.identity/use: "true"
 
   # Pod labels for workload identity webhook
-  labels:
+  extraLabels:
     azure.workload.identity/use: "true"
 
   # Anti-affinity: prefer spreading Vault pods across nodes for HA
   # Using soft anti-affinity to allow 3 replicas on 2 nodes (dev quota constraint)
-  affinity:
+  # Must be a multi-line string (not YAML map) — the Helm chart renders it as a Go template.
+  affinity: |
     podAntiAffinity:
       preferredDuringSchedulingIgnoredDuringExecution:
         - weight: 100

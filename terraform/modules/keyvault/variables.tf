@@ -24,6 +24,11 @@ variable "deployer_ip_addresses" {
   default     = []
 }
 
+variable "aks_oidc_issuer_url" {
+  description = "OIDC issuer URL from the AKS cluster, used for workload identity federation"
+  type        = string
+}
+
 variable "tags" {
   description = "Tags to apply to all resources"
   type        = map(string)
