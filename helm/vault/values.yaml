@@ -104,7 +104,7 @@ server:
     azure.workload.identity/use: "true"
 
   # Pod labels for workload identity webhook
-  labels:
+  extraLabels:
     azure.workload.identity/use: "true"
 
   # Anti-affinity: prefer spreading Vault pods across nodes for HA
