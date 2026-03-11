@@ -1,0 +1,55 @@
+# Bitnami PostgreSQL Helm chart values for in-cluster database.
+# Chart: bitnami/postgresql (https://github.com/bitnami/charts/tree/main/bitnami/postgresql)
+#
+# This PostgreSQL instance serves as the backend for Vault's database secrets
+# engine, which generates short-lived dynamic credentials for team-data workloads.
+#
+# Deploy with:
+#   make postgresql-deploy
+# Or directly:
+#   bash vault/scripts/deploy-postgresql.sh
+#
+# The admin password is generated at deploy time and stored in Vault.
+# Do not hardcode passwords here.
+
+image:
+  registry: docker.io
+  repository: bitnami/postgresql
+  tag: "16.6.0"
+
+# Single replica — HA PostgreSQL is out of scope for this dev environment
+architecture: standalone
+
+auth:
+  # Database used by Vault's database secrets engine for dynamic credential generation
+  database: vault_db
+  # Password is injected at deploy time via --set (never committed to disk)
+  # postgresPassword: <injected>
+
+primary:
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "128Mi"
+    limits:
+      cpu: "250m"
+      memory: "256Mi"
+
+  persistence:
+    enabled: true
+    size: 1Gi
+    storageClass: managed-csi
+
+  # Pod-level security context
+  podSecurityContext:
+    enabled: true
+    fsGroup: 1001
+
+  containerSecurityContext:
+    enabled: true
+    runAsUser: 1001
+    runAsNonRoot: true
+
+# Disable metrics exporter — observability is Phase 6
+metrics:
+  enabled: false

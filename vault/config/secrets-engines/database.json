@@ -1,0 +1,28 @@
+{
+  "description": "Vault database secrets engine configuration for PostgreSQL",
+  "mount_path": "database/",
+  "connection": {
+    "name": "postgresql",
+    "plugin": "postgresql-database-plugin",
+    "host": "postgresql.database.svc.cluster.local",
+    "port": 5432,
+    "database": "vault_db",
+    "sslmode": "disable",
+    "admin_credentials_path": "secret/shared/infra/postgresql-admin"
+  },
+  "roles": {
+    "team-data-readonly": {
+      "db_name": "postgresql",
+      "grants": ["SELECT"],
+      "default_ttl": "1h",
+      "max_ttl": "24h"
+    },
+    "team-data-readwrite": {
+      "db_name": "postgresql",
+      "grants": ["SELECT", "INSERT", "UPDATE", "DELETE"],
+      "default_ttl": "1h",
+      "max_ttl": "24h"
+    }
+  },
+  "notes": "Applied by vault/scripts/configure-dynamic-secrets.sh. Root password is rotated after initial configuration — only Vault controls it."
+}
