@@ -43,10 +43,10 @@ kubectl logs -n vault vault-2 --tail=50
 ```
 
 Look for errors containing:
-- `"error unsealing"` — Auto-unseal is failing
-- `"azure key vault"` or `"keyvault"` — Key Vault connectivity issues
-- `"managed identity"` or `"IMDS"` — Identity/authentication failures
-- `"network"` or `"timeout"` — Network connectivity problems
+- `"error unsealing"` -- Auto-unseal is failing
+- `"azure key vault"` or `"keyvault"` -- Key Vault connectivity issues
+- `"managed identity"` or `"IMDS"` -- Identity/authentication failures
+- `"network"` or `"timeout"` -- Network connectivity problems
 
 ### Step 3: Verify Key Vault Access
 
@@ -162,7 +162,7 @@ If none of the above procedures restore the cluster:
 2. Review Azure Activity Log for unauthorized changes to the Key Vault or identity
 3. Contact HashiCorp support (if under a support contract)
 4. As a last resort, re-initialize Vault from backup (data loss for any secrets
-   not backed up — see disaster recovery documentation)
+   not backed up -- see disaster recovery documentation)
 
 ## Prevention
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# rotate-db-creds.sh — Force-rotate database root credentials
+# rotate-db-creds.sh -- Force-rotate database root credentials
 #
 # This script forces an immediate rotation of the PostgreSQL root password
 # used by the Vault database secrets engine. Use this for:

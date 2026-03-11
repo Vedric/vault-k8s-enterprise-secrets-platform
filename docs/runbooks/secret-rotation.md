@@ -70,7 +70,7 @@ kubectl exec -n vault vault-0 -- \
     ttl="24h"
 ```
 
-### Static Secrets (Manual — 90-day cycle)
+### Static Secrets (Manual -- 90-day cycle)
 
 Static secrets (API keys, third-party credentials) require manual rotation by the
 responsible team. The platform enforces a 90-day rotation policy through monitoring.

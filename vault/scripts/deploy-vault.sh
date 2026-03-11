@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# deploy-vault.sh — Deploy Vault HA cluster to AKS using Helm
+# deploy-vault.sh -- Deploy Vault HA cluster to AKS using Helm
 #
 # Reads Terraform outputs to inject Azure-specific values into the Helm chart,
 # then installs or upgrades the hashicorp/vault Helm chart.
@@ -165,7 +165,7 @@ apply_rbac() {
 
 wait_for_pods() {
   if [[ -n "${DRY_RUN}" ]]; then
-    log "Dry run mode — skipping pod readiness check."
+    log "Dry run mode -- skipping pod readiness check."
     return 0
   fi
 

@@ -141,7 +141,7 @@ spec:
 - Secrets are stored as native K8s Secrets (in etcd, encrypted at rest if configured)
 - Access control has two layers: Vault policy (ESO read-only) + K8s RBAC (who can
   create ExternalSecret CRs in each namespace)
-- No sidecar per pod — single controller for all ExternalSecrets
+- No sidecar per pod -- single controller for all ExternalSecrets
 - GitOps-friendly: ExternalSecret CRs can be committed to the repo
 
 ### Trade-offs
@@ -170,7 +170,7 @@ and `secret/metadata/*` paths. This broad access is secure because:
 1. **K8s RBAC** controls which namespaces can deploy ExternalSecret CRs
 2. Each ExternalSecret specifies the exact secret path to sync
 3. Teams cannot create ExternalSecret CRs in other teams' namespaces
-4. ESO only reads — it cannot modify or delete Vault secrets
+4. ESO only reads -- it cannot modify or delete Vault secrets
 
 ## Setup
 

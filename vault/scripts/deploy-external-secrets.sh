@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# deploy-external-secrets.sh — Deploy External Secrets Operator and configure Vault auth
+# deploy-external-secrets.sh -- Deploy External Secrets Operator and configure Vault auth
 #
 # This script:
 # 1. Installs ESO via Helm in the external-secrets namespace
@@ -39,7 +39,7 @@ Options:
   -h, --help         Show this help message
 
 Environment variables:
-  VAULT_TOKEN          Required — Vault admin token
+  VAULT_TOKEN          Required -- Vault admin token
   VAULT_ADDR           Vault address (default: http://127.0.0.1:8200)
   ESO_NAMESPACE        ESO K8s namespace (default: external-secrets)
   HELM_CHART_VERSION   ESO Helm chart version (default: 0.10.7)
@@ -213,7 +213,7 @@ verify_eso() {
     sleep 5
   done
 
-  # Not fatal — the store may need Vault to be fully configured
+  # Not fatal -- the store may need Vault to be fully configured
   log "  [WARN] ClusterSecretStore is not yet Ready (may need Vault K8s auth)."
   log "  Check: kubectl get clustersecretstore vault-backend -o yaml"
 }

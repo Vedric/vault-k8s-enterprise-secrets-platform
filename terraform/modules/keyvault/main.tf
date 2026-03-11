@@ -70,7 +70,7 @@ resource "azurerm_key_vault" "main" {
 # Access Policies
 # -----------------------------------------------------------------------------
 
-# Deployer access — full key and secret management for Terraform operations
+# Deployer access -- full key and secret management for Terraform operations
 resource "azurerm_key_vault_access_policy" "deployer" {
   key_vault_id = azurerm_key_vault.main.id
   tenant_id    = data.azurerm_client_config.current.tenant_id
@@ -98,7 +98,7 @@ resource "azurerm_key_vault_access_policy" "deployer" {
   ]
 }
 
-# Vault managed identity — minimal permissions for auto-unseal only
+# Vault managed identity -- minimal permissions for auto-unseal only
 resource "azurerm_key_vault_access_policy" "vault_unseal" {
   key_vault_id = azurerm_key_vault.main.id
   tenant_id    = data.azurerm_client_config.current.tenant_id

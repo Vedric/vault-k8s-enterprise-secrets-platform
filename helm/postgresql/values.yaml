@@ -17,7 +17,7 @@ image:
   repository: bitnami/postgresql
   tag: "16.6.0"
 
-# Single replica — HA PostgreSQL is out of scope for this dev environment
+# Single replica -- HA PostgreSQL is out of scope for this dev environment
 architecture: standalone
 
 auth:
@@ -50,6 +50,6 @@ primary:
     runAsUser: 1001
     runAsNonRoot: true
 
-# Disable metrics exporter — observability is Phase 6
+# Disable metrics exporter -- observability is Phase 6
 metrics:
   enabled: false

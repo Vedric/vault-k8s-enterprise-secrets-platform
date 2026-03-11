@@ -3,7 +3,7 @@
 ## Overview
 
 Phase 4 adds two Vault secrets engines that generate short-lived, automatically
-rotated credentials — eliminating long-lived static secrets for database access
+rotated credentials -- eliminating long-lived static secrets for database access
 and internal TLS.
 
 | Engine | Mount | Purpose |
@@ -89,7 +89,7 @@ Only `team-data` policy grants access to `database/creds/*`. Other teams
 ### Certificate Authority
 
 - **CN**: `Vault K8s Internal CA`
-- **Type**: Internal root CA (no intermediate — dev scope)
+- **Type**: Internal root CA (no intermediate -- dev scope)
 - **TTL**: 10 years (87,600 hours)
 - **Key**: RSA 2048-bit
 
@@ -142,8 +142,8 @@ make vault-full-setup
 
 Declarative configuration references are stored in `vault/config/secrets-engines/`:
 
-- `database.json` — Database engine connection, roles, and TTL settings
-- `pki.json` — PKI CA configuration, URLs, and role settings
+- `database.json` -- Database engine connection, roles, and TTL settings
+- `pki.json` -- PKI CA configuration, URLs, and role settings
 
 These files document the intended state. The actual configuration is applied by
 `vault/scripts/configure-dynamic-secrets.sh`.

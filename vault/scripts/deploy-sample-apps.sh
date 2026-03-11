@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# deploy-sample-apps.sh — Deploy sample apps demonstrating both injection patterns
+# deploy-sample-apps.sh -- Deploy sample apps demonstrating both injection patterns
 #
 # This script:
 # 1. Seeds a demo secret in Vault for the sample apps to consume
@@ -255,12 +255,12 @@ print_summary() {
   echo ""
   log "=== Sample Applications Deployed ==="
   echo ""
-  log "Pattern 1 — Vault Agent Sidecar:"
+  log "Pattern 1 -- Vault Agent Sidecar:"
   log "  Deployment:  sample-app-sidecar (${APP_NAMESPACE})"
   log "  Secret:      /vault/secrets/config (in-memory, never in etcd)"
   log "  Refresh:     Vault Agent polls automatically"
   echo ""
-  log "Pattern 2 — External Secrets Operator:"
+  log "Pattern 2 -- External Secrets Operator:"
   log "  Deployment:  sample-app-eso (${APP_NAMESPACE})"
   log "  Secret:      K8s Secret 'sample-app-eso-secrets' (synced from Vault)"
   log "  Refresh:     Every 1 minute (ESO refresh interval)"

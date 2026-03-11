@@ -49,7 +49,7 @@ resource "azurerm_network_security_group" "vault" {
 }
 
 # -----------------------------------------------------------------------------
-# NSG Rules — AKS Subnet
+# NSG Rules -- AKS Subnet
 # -----------------------------------------------------------------------------
 
 resource "azurerm_network_security_rule" "aks_allow_vault_api" {
@@ -95,7 +95,7 @@ resource "azurerm_network_security_rule" "aks_deny_internet_inbound" {
 }
 
 # -----------------------------------------------------------------------------
-# NSG Rules — Vault Subnet
+# NSG Rules -- Vault Subnet
 # -----------------------------------------------------------------------------
 
 resource "azurerm_network_security_rule" "vault_allow_vault_api" {
