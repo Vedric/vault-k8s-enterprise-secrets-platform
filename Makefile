@@ -1,6 +1,6 @@
 .PHONY: help init plan apply destroy fmt validate lint security-scan \
 	vault-deploy vault-deploy-upgrade vault-deploy-dry-run \
-	vault-init vault-configure test clean
+	vault-init vault-configure vault-setup test clean
 
 TERRAFORM_DIR := terraform
 ENVIRONMENT   := dev
@@ -60,6 +60,8 @@ vault-init: ## Initialize and unseal Vault cluster
 
 vault-configure: ## Configure Vault paths, policies, and auth methods
 	bash vault/scripts/configure-namespaces.sh
+
+vault-setup: vault-deploy vault-init vault-configure ## Full Vault setup: deploy + init + configure
 
 # ---------------------------------------------------------------------------
 # Tests

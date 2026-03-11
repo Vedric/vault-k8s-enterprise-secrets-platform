@@ -83,9 +83,9 @@ Each team has a dedicated HCL policy file in `vault/policies/`:
 ```
 Kubernetes Service Account          Vault Role              Vault Policy
 ─────────────────────────          ──────────              ────────────
-team-platform/vault-sa       →    role-team-platform   →   team-platform
-team-appdev/vault-sa         →    role-team-appdev     →   team-appdev
-team-data/vault-sa           →    role-team-data       →   team-data
+team-platform/vault-sa       →    team-platform        →   team-platform
+team-appdev/vault-sa         →    team-appdev          →   team-appdev
+team-data/vault-sa           →    team-data            →   team-data
 ```
 
 Each Kubernetes namespace has a dedicated service account. The Vault Kubernetes auth

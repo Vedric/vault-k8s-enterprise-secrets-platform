@@ -112,7 +112,11 @@ make vault-deploy
 make vault-init
 # ⚠ Store recovery keys and root token securely!
 
-# 7. Verify cluster health
+# 7. Configure multi-tenancy (KV v2, policies, K8s auth)
+export VAULT_TOKEN="<root-token-from-init>"
+make vault-configure
+
+# 8. Verify cluster health
 kubectl exec -n vault vault-0 -- vault status
 kubectl exec -n vault vault-0 -- vault operator raft list-peers
 ```
@@ -122,8 +126,8 @@ kubectl exec -n vault vault-0 -- vault operator raft list-peers
 | Phase | Description | Status |
 |-------|-------------|--------|
 | 1 | Azure Infrastructure (Terraform: AKS, Key Vault, Networking, Monitoring) | Complete |
-| 2 | Vault HA Deployment (Helm, Raft storage, auto-unseal, failover validation) | In Progress |
-| 3 | Multi-Tenancy & Auth (KV v2 paths, HCL policies, Kubernetes auth method) | Planned |
+| 2 | Vault HA Deployment (Helm, Raft storage, auto-unseal, failover validation) | Complete |
+| 3 | Multi-Tenancy & Auth (KV v2 paths, HCL policies, Kubernetes auth method) | Complete |
 | 4 | Dynamic Secrets & Rotation (PostgreSQL credentials, PKI certificates) | Planned |
 | 5 | Secret Injection Patterns (Vault Agent Sidecar vs External Secrets Operator) | Planned |
 | 6 | Observability & Testing (Audit logs, Loki + Grafana, bats test suite, CI/CD) | Planned |
