@@ -1,6 +1,8 @@
 .PHONY: help init plan apply destroy fmt validate lint security-scan \
 	vault-deploy vault-deploy-upgrade vault-deploy-dry-run \
-	vault-init vault-configure vault-setup test clean
+	vault-init vault-configure vault-setup \
+	postgresql-deploy vault-dynamic-secrets vault-rotate-db vault-full-setup \
+	test clean
 
 TERRAFORM_DIR := terraform
 ENVIRONMENT   := dev
@@ -62,6 +64,21 @@ vault-configure: ## Configure Vault paths, policies, and auth methods
 	bash vault/scripts/configure-namespaces.sh
 
 vault-setup: vault-deploy vault-init vault-configure ## Full Vault setup: deploy + init + configure
+
+# ---------------------------------------------------------------------------
+# Dynamic Secrets (Phase 4)
+# ---------------------------------------------------------------------------
+
+postgresql-deploy: ## Deploy in-cluster PostgreSQL via Helm
+	bash vault/scripts/deploy-postgresql.sh
+
+vault-dynamic-secrets: ## Configure database and PKI secrets engines
+	bash vault/scripts/configure-dynamic-secrets.sh
+
+vault-rotate-db: ## Force-rotate PostgreSQL root credentials
+	bash vault/scripts/rotate-db-creds.sh
+
+vault-full-setup: vault-setup postgresql-deploy vault-dynamic-secrets ## Full setup: infra + auth + dynamic secrets
 
 # ---------------------------------------------------------------------------
 # Tests

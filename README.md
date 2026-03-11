@@ -72,6 +72,8 @@ secret/
 | [bats-core](https://github.com/bats-core/bats-core) | >= 1.10 | Shell-based test framework |
 | [tflint](https://github.com/terraform-linters/tflint) | >= 0.50 | Terraform linting |
 | [checkov](https://www.checkov.io/) | >= 3.0 | Infrastructure security scanning |
+| [jq](https://jqlang.github.io/jq/) | >= 1.6 | JSON processing in scripts |
+| openssl | >= 1.1 | Password generation for database deployments |
 
 You also need an Azure subscription with **Contributor** role access.
 
@@ -119,6 +121,12 @@ make vault-configure
 # 8. Verify cluster health
 kubectl exec -n vault vault-0 -- vault status
 kubectl exec -n vault vault-0 -- vault operator raft list-peers
+
+# 9. Deploy in-cluster PostgreSQL
+make postgresql-deploy
+
+# 10. Configure dynamic secrets (database + PKI engines)
+make vault-dynamic-secrets
 ```
 
 ## Project Roadmap
@@ -128,7 +136,7 @@ kubectl exec -n vault vault-0 -- vault operator raft list-peers
 | 1 | Azure Infrastructure (Terraform: AKS, Key Vault, Networking, Monitoring) | Complete |
 | 2 | Vault HA Deployment (Helm, Raft storage, auto-unseal, failover validation) | Complete |
 | 3 | Multi-Tenancy & Auth (KV v2 paths, HCL policies, Kubernetes auth method) | Complete |
-| 4 | Dynamic Secrets & Rotation (PostgreSQL credentials, PKI certificates) | Planned |
+| 4 | Dynamic Secrets & Rotation (PostgreSQL credentials, PKI certificates) | Complete |
 | 5 | Secret Injection Patterns (Vault Agent Sidecar vs External Secrets Operator) | Planned |
 | 6 | Observability & Testing (Audit logs, Loki + Grafana, bats test suite, CI/CD) | Planned |
 
@@ -172,10 +180,11 @@ kubectl exec -n vault vault-0 -- vault operator raft list-peers
 │   └── environments/       # Environment-specific tfvars
 ├── helm/                   # Helm chart values
 │   ├── vault/              # Vault HA configuration
+│   ├── postgresql/         # In-cluster PostgreSQL for dynamic secrets
 │   └── external-secrets/   # External Secrets Operator
 ├── vault/                  # Vault configuration
 │   ├── policies/           # HCL policy files per team
-│   ├── config/             # Auth methods, secrets engines
+│   ├── config/             # Auth methods, secrets engine reference configs
 │   └── scripts/            # Initialization and rotation scripts
 ├── kubernetes/             # Kubernetes manifests
 │   ├── namespaces/         # Team namespace definitions
@@ -198,6 +207,7 @@ kubectl exec -n vault vault-0 -- vault operator raft list-peers
 - [Architecture Overview](docs/architecture.md)
 - [Multi-Tenancy Design](docs/multi-tenancy.md)
 - [Seal Recovery Runbook](docs/runbooks/seal-recovery.md)
+- [Dynamic Secrets Architecture](docs/dynamic-secrets.md)
 - [Secret Rotation Runbook](docs/runbooks/secret-rotation.md)
 
 ## License
