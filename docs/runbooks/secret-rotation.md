@@ -24,6 +24,9 @@ certificates) and emergency scenarios.
 The Vault database secrets engine generates short-lived credentials with a 1-hour TTL.
 No manual intervention is needed under normal operation.
 
+> For full architecture details, see [Dynamic Secrets Architecture](../dynamic-secrets.md).
+> Initial setup: `vault/scripts/configure-dynamic-secrets.sh` or `make vault-dynamic-secrets`.
+
 **Verification:**
 
 ```bash
