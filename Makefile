@@ -2,6 +2,7 @@
 	vault-deploy vault-deploy-upgrade vault-deploy-dry-run \
 	vault-init vault-configure vault-setup \
 	postgresql-deploy vault-dynamic-secrets vault-rotate-db vault-full-setup \
+	eso-deploy sample-deploy injection-setup \
 	test clean
 
 TERRAFORM_DIR := terraform
@@ -78,7 +79,19 @@ vault-dynamic-secrets: ## Configure database and PKI secrets engines
 vault-rotate-db: ## Force-rotate PostgreSQL root credentials
 	bash vault/scripts/rotate-db-creds.sh
 
-vault-full-setup: vault-setup postgresql-deploy vault-dynamic-secrets ## Full setup: infra + auth + dynamic secrets
+vault-full-setup: vault-setup postgresql-deploy vault-dynamic-secrets injection-setup ## Full setup: all phases
+
+# ---------------------------------------------------------------------------
+# Secret Injection (Phase 5)
+# ---------------------------------------------------------------------------
+
+eso-deploy: ## Deploy External Secrets Operator and configure Vault auth
+	bash vault/scripts/deploy-external-secrets.sh
+
+sample-deploy: ## Deploy sample apps demonstrating both injection patterns
+	bash vault/scripts/deploy-sample-apps.sh
+
+injection-setup: eso-deploy sample-deploy ## Full injection setup: ESO + sample apps
 
 # ---------------------------------------------------------------------------
 # Tests
