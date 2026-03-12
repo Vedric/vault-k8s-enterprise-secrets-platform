@@ -109,7 +109,7 @@ server:
 
   # Anti-affinity: prefer spreading Vault pods across nodes for HA
   # Using soft anti-affinity to allow 3 replicas on 2 nodes (dev quota constraint)
-  # Must be a multi-line string (not YAML map) — the Helm chart renders it as a Go template.
+  # Must be a multi-line string (not YAML map) -- the Helm chart renders it as a Go template.
   affinity: |
     podAntiAffinity:
       preferredDuringSchedulingIgnoredDuringExecution:

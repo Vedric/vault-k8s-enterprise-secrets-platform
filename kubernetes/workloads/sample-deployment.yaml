@@ -1,14 +1,14 @@
 # Sample deployment demonstrating both secret injection patterns.
 # This file contains two deployments:
-# 1. sample-app-sidecar — uses Vault Agent Injector (sidecar)
-# 2. sample-app-eso — uses External Secrets Operator (K8s Secret)
+# 1. sample-app-sidecar -- uses Vault Agent Injector (sidecar)
+# 2. sample-app-eso -- uses External Secrets Operator (K8s Secret)
 #
 # Deploy to the team-appdev namespace:
 #   kubectl apply -f kubernetes/workloads/sample-deployment.yaml
 
 ---
 # Pattern 1: Vault Agent Sidecar Injection
-# Secrets are rendered in-memory at /vault/secrets/ — never written to etcd.
+# Secrets are rendered in-memory at /vault/secrets/ -- never written to etcd.
 apiVersion: apps/v1
 kind: Deployment
 metadata:

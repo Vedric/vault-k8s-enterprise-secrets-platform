@@ -12,11 +12,11 @@ resource "azurerm_kubernetes_cluster" "main" {
   kubernetes_version  = var.kubernetes_version
   tags                = var.tags
 
-  # Workload identity and OIDC — required for Vault-to-Key Vault authentication
+  # Workload identity and OIDC -- required for Vault-to-Key Vault authentication
   oidc_issuer_enabled       = true
   workload_identity_enabled = true
 
-  # Disable local admin account — enforce AAD authentication only
+  # Disable local admin account -- enforce AAD authentication only
   local_account_disabled = true
 
   # Automatic patch upgrades for security fixes

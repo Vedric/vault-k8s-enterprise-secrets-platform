@@ -1,8 +1,10 @@
 .PHONY: help init plan apply destroy fmt validate lint security-scan \
 	vault-deploy vault-deploy-upgrade vault-deploy-dry-run \
 	vault-init vault-configure vault-setup \
-	postgresql-deploy vault-dynamic-secrets vault-rotate-db vault-full-setup \
-	test clean
+	postgresql-deploy vault-dynamic-secrets vault-rotate-db \
+	eso-deploy sample-deploy injection-setup \
+	observability-deploy configure-audit \
+	vault-full-setup test clean
 
 TERRAFORM_DIR := terraform
 ENVIRONMENT   := dev
@@ -78,7 +80,29 @@ vault-dynamic-secrets: ## Configure database and PKI secrets engines
 vault-rotate-db: ## Force-rotate PostgreSQL root credentials
 	bash vault/scripts/rotate-db-creds.sh
 
-vault-full-setup: vault-setup postgresql-deploy vault-dynamic-secrets ## Full setup: infra + auth + dynamic secrets
+vault-full-setup: vault-setup postgresql-deploy vault-dynamic-secrets injection-setup observability-deploy configure-audit ## Full setup: all phases
+
+# ---------------------------------------------------------------------------
+# Secret Injection (Phase 5)
+# ---------------------------------------------------------------------------
+
+eso-deploy: ## Deploy External Secrets Operator and configure Vault auth
+	bash vault/scripts/deploy-external-secrets.sh
+
+sample-deploy: ## Deploy sample apps demonstrating both injection patterns
+	bash vault/scripts/deploy-sample-apps.sh
+
+injection-setup: eso-deploy sample-deploy ## Full injection setup: ESO + sample apps
+
+# ---------------------------------------------------------------------------
+# Observability (Phase 6)
+# ---------------------------------------------------------------------------
+
+observability-deploy: ## Deploy monitoring stack (Prometheus, Grafana, Loki)
+	bash vault/scripts/deploy-observability.sh
+
+configure-audit: ## Enable Vault file audit backend
+	bash vault/scripts/configure-audit-logging.sh
 
 # ---------------------------------------------------------------------------
 # Tests

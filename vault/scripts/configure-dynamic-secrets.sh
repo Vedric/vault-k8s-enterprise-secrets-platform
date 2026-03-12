@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# configure-dynamic-secrets.sh — Configure Vault database and PKI secrets engines
+# configure-dynamic-secrets.sh -- Configure Vault database and PKI secrets engines
 #
 # This script sets up:
 # 1. Database secrets engine with PostgreSQL connection
@@ -179,7 +179,7 @@ configure_database_engine() {
 
   # Update the Vault KV entry to reflect that the password is now Vault-managed
   vault kv patch secret/shared/infra/postgresql-admin \
-    note="Root password rotated by Vault — original password is no longer valid"
+    note="Root password rotated by Vault -- original password is no longer valid"
 
   log "Database secrets engine fully configured."
 }
@@ -301,7 +301,7 @@ print_summary() {
   log "  Connection:    postgresql (postgresql.${DB_NAMESPACE}.svc.cluster.local:5432)"
   log "  Roles:         team-data-readonly (SELECT, 1h TTL)"
   log "                 team-data-readwrite (DML, 1h TTL)"
-  log "  Root password: rotated — only Vault knows it"
+  log "  Root password: rotated -- only Vault knows it"
   echo ""
   log "PKI secrets engine:"
   log "  CA:            Vault K8s Internal CA (10-year TTL)"
