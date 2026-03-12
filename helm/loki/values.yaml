@@ -1,0 +1,114 @@
+# Loki stack Helm chart values for log aggregation.
+# Chart: grafana/loki-stack (https://github.com/grafana/helm-charts)
+#
+# Loki runs in single-binary mode (monolithic). Promtail runs as a DaemonSet
+# and collects container logs from /var/log/pods/ plus Vault audit logs.
+#
+# Deploy with:
+#   make observability-deploy
+# Or directly:
+#   bash vault/scripts/deploy-observability.sh
+
+# -- Loki --
+loki:
+  enabled: true
+
+  # Single-binary mode -- suitable for dev/small clusters
+  replicas: 1
+
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "128Mi"
+    limits:
+      cpu: "250m"
+      memory: "256Mi"
+
+  persistence:
+    enabled: true
+    size: 2Gi
+    storageClassName: managed-csi
+
+  config:
+    auth_enabled: false
+
+    server:
+      http_listen_port: 3100
+
+    common:
+      path_prefix: /loki
+      replication_factor: 1
+
+    schema_config:
+      configs:
+        - from: "2024-01-01"
+          store: tsdb
+          object_store: filesystem
+          schema: v13
+          index:
+            prefix: index_
+            period: 24h
+
+    storage_config:
+      filesystem:
+        directory: /loki/chunks
+
+    limits_config:
+      retention_period: 72h
+      max_query_series: 500
+
+    compactor:
+      working_directory: /loki/compactor
+      compaction_interval: 10m
+      retention_enabled: true
+
+# -- Promtail --
+promtail:
+  enabled: true
+
+  resources:
+    requests:
+      cpu: "50m"
+      memory: "64Mi"
+    limits:
+      cpu: "100m"
+      memory: "128Mi"
+
+  config:
+    clients:
+      - url: http://loki:3100/loki/api/v1/push
+
+    positions:
+      filename: /run/promtail/positions.yaml
+
+    scrape_configs:
+      # Standard Kubernetes pod logs
+      - job_name: kubernetes-pods
+        kubernetes_sd_configs:
+          - role: pod
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
+            target_label: app
+          - source_labels: [__meta_kubernetes_namespace]
+            target_label: namespace
+          - source_labels: [__meta_kubernetes_pod_name]
+            target_label: pod
+        pipeline_stages:
+          - docker: {}
+
+      # Vault audit logs (JSON format, written to /vault/audit/)
+      - job_name: vault-audit
+        static_configs:
+          - targets:
+              - localhost
+            labels:
+              job: vault-audit
+              __path__: /var/log/pods/vault_vault-*/**/vault-audit.log
+
+# Grafana is deployed via kube-prometheus-stack -- disable here
+grafana:
+  enabled: false
+
+# Prometheus is deployed via kube-prometheus-stack -- disable here
+prometheus:
+  enabled: false
