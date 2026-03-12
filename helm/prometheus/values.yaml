@@ -1,0 +1,139 @@
+# kube-prometheus-stack Helm chart values for Vault cluster monitoring.
+# Chart: prometheus-community/kube-prometheus-stack
+#
+# Includes Prometheus, Grafana, Alertmanager, node-exporter, and kube-state-metrics.
+# Resource requests are tuned for Standard_B2s_v2 nodes (2 vCPU, 8 GiB RAM).
+#
+# Deploy with:
+#   make observability-deploy
+# Or directly:
+#   bash vault/scripts/deploy-observability.sh
+
+# -- Prometheus --
+prometheus:
+  prometheusSpec:
+    replicas: 1
+
+    retention: 48h
+
+    resources:
+      requests:
+        cpu: "100m"
+        memory: "256Mi"
+      limits:
+        cpu: "500m"
+        memory: "512Mi"
+
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: managed-csi
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 2Gi
+
+    # Scrape all ServiceMonitors in any namespace
+    serviceMonitorSelectorNilUsesHelmValues: false
+    podMonitorSelectorNilUsesHelmValues: false
+    ruleSelectorNilUsesHelmValues: false
+
+# -- Grafana --
+grafana:
+  enabled: true
+  replicas: 1
+
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "128Mi"
+    limits:
+      cpu: "250m"
+      memory: "256Mi"
+
+  # Sidecar auto-discovers ConfigMaps with grafana_dashboard label
+  sidecar:
+    dashboards:
+      enabled: true
+      label: grafana_dashboard
+      labelValue: "1"
+    datasources:
+      enabled: true
+
+  # Loki datasource provisioning (Loki deployed separately)
+  additionalDataSources:
+    - name: Loki
+      type: loki
+      url: http://loki.monitoring.svc.cluster.local:3100
+      access: proxy
+      isDefault: false
+
+  persistence:
+    enabled: false  # Dashboards are provisioned via ConfigMaps, no state to persist
+
+  service:
+    type: ClusterIP
+
+# -- Alertmanager --
+alertmanager:
+  alertmanagerSpec:
+    replicas: 1
+
+    resources:
+      requests:
+        cpu: "50m"
+        memory: "64Mi"
+      limits:
+        cpu: "100m"
+        memory: "128Mi"
+
+    storage:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: managed-csi
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 1Gi
+
+# -- Node Exporter --
+nodeExporter:
+  enabled: true
+
+prometheus-node-exporter:
+  resources:
+    requests:
+      cpu: "50m"
+      memory: "32Mi"
+    limits:
+      cpu: "100m"
+      memory: "64Mi"
+
+# -- Kube State Metrics --
+kube-state-metrics:
+  resources:
+    requests:
+      cpu: "50m"
+      memory: "64Mi"
+    limits:
+      cpu: "100m"
+      memory: "128Mi"
+
+# -- Vault ServiceMonitor --
+# Scrapes Vault metrics from the Prometheus telemetry endpoint
+additionalServiceMonitors:
+  - name: vault
+    namespace: monitoring
+    selector:
+      matchLabels:
+        app.kubernetes.io/name: vault
+    namespaceSelector:
+      matchNames:
+        - vault
+    endpoints:
+      - port: http
+        path: /v1/sys/metrics
+        params:
+          format: ["prometheus"]
+        interval: 30s
+        scrapeTimeout: 10s

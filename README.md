@@ -5,7 +5,7 @@
 ![Vault](https://img.shields.io/badge/Vault-1.17+-yellow)
 ![Kubernetes](https://img.shields.io/badge/Kubernetes-1.32-blue)
 
-Enterprise-grade HashiCorp Vault secrets management platform on Azure Kubernetes Service (AKS). This project demonstrates a production-ready deployment with HA Raft storage, auto-unseal via Azure Key Vault, path-based multi-tenancy, dynamic secret rotation, and dual secret injection patterns (Vault Agent Sidecar + External Secrets Operator).
+Enterprise-grade HashiCorp Vault secrets management platform on Azure Kubernetes Service (AKS). This project demonstrates a production-ready deployment with HA Raft storage, auto-unseal via Azure Key Vault, path-based multi-tenancy, dynamic secret rotation, dual secret injection patterns (Vault Agent Sidecar + External Secrets Operator), and full observability (Prometheus metrics, Loki audit logs, Grafana dashboards).
 
 ## Architecture
 
@@ -133,6 +133,12 @@ make eso-deploy
 
 # 12. Deploy sample apps (both injection patterns)
 make sample-deploy
+
+# 13. Deploy observability stack (Prometheus, Grafana, Loki)
+make observability-deploy
+
+# 14. Enable Vault audit logging
+make configure-audit
 ```
 
 ## Project Roadmap
@@ -144,7 +150,7 @@ make sample-deploy
 | 3 | Multi-Tenancy & Auth (KV v2 paths, HCL policies, Kubernetes auth method) | Complete |
 | 4 | Dynamic Secrets & Rotation (PostgreSQL credentials, PKI certificates) | Complete |
 | 5 | Secret Injection Patterns (Vault Agent Sidecar vs External Secrets Operator) | Complete |
-| 6 | Observability & Testing (Audit logs, Loki + Grafana, bats test suite, CI/CD) | Planned |
+| 6 | Observability & Testing (Audit logs, Loki + Grafana, bats test suite, CI/CD) | Complete |
 
 ## Cost Estimation (Dev Environment)
 
@@ -187,7 +193,9 @@ make sample-deploy
 ├── helm/                   # Helm chart values
 │   ├── vault/              # Vault HA configuration
 │   ├── postgresql/         # In-cluster PostgreSQL for dynamic secrets
-│   └── external-secrets/   # External Secrets Operator
+│   ├── external-secrets/   # External Secrets Operator
+│   ├── prometheus/         # kube-prometheus-stack (metrics + Grafana)
+│   └── loki/               # Loki stack (log aggregation + Promtail)
 ├── vault/                  # Vault configuration
 │   ├── policies/           # HCL policy files per team
 │   ├── config/             # Auth methods, secrets engine reference configs
@@ -215,6 +223,7 @@ make sample-deploy
 - [Seal Recovery Runbook](docs/runbooks/seal-recovery.md)
 - [Dynamic Secrets Architecture](docs/dynamic-secrets.md)
 - [Secret Injection Patterns](docs/secret-injection.md)
+- [Observability Architecture](docs/observability.md)
 - [Secret Rotation Runbook](docs/runbooks/secret-rotation.md)
 
 ## License
