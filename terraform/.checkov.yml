@@ -8,7 +8,7 @@ framework:
 skip-check:
   # --- AKS: Enterprise features not applicable to dev environment ---
 
-  # CKV_AZURE_35: AKS private cluster — skipped because a private API server
+  # CKV_AZURE_35: AKS private cluster -- skipped because a private API server
   # requires a VPN or bastion host to access, which adds cost and complexity
   # beyond the scope of this portfolio project.
   - CKV_AZURE_35
@@ -16,55 +16,55 @@ skip-check:
   # CKV_AZURE_115: AKS private cluster (duplicate of CKV_AZURE_35)
   - CKV_AZURE_115
 
-  # CKV_AZURE_6: API server authorized IP ranges — skipped for dev because
+  # CKV_AZURE_6: API server authorized IP ranges -- skipped for dev because
   # developer IPs are dynamic. In production, this would be set to the
   # corporate VPN egress and CI runner IPs.
   - CKV_AZURE_6
 
-  # CKV_AZURE_117: Disk encryption set — requires a separate Azure Disk
+  # CKV_AZURE_117: Disk encryption set -- requires a separate Azure Disk
   # Encryption Set resource backed by a CMK. Overkill for a dev portfolio;
   # Azure encrypts managed disks at rest with platform-managed keys by default.
   - CKV_AZURE_117
 
-  # CKV_AZURE_227: Encrypt temp disks and data flows — same as CKV_AZURE_117,
+  # CKV_AZURE_227: Encrypt temp disks and data flows -- same as CKV_AZURE_117,
   # requires disk encryption set.
   - CKV_AZURE_227
 
-  # CKV_AZURE_226: Ephemeral OS disks — Standard_B2s_v2 does not have a large
+  # CKV_AZURE_226: Ephemeral OS disks -- Standard_B2s_v2 does not have a large
   # enough cache to support ephemeral OS disks (requires cache > OS disk size).
   - CKV_AZURE_226
 
-  # CKV_AZURE_170: Paid SLA SKU — the free tier is sufficient for a dev
+  # CKV_AZURE_170: Paid SLA SKU -- the free tier is sufficient for a dev
   # portfolio. Production would use the Standard or Premium tier.
   - CKV_AZURE_170
 
-  # CKV_AZURE_168: Minimum 50 pods per node — B2s_v2 nodes with 8 GiB RAM
+  # CKV_AZURE_168: Minimum 50 pods per node -- B2s_v2 nodes with 8 GiB RAM
   # can handle more pods but 30 is still appropriate for 2-node dev cluster
   # to avoid resource pressure.
   - CKV_AZURE_168
 
-  # CKV_AZURE_232: Only critical pods on system nodes — requires a separate
+  # CKV_AZURE_232: Only critical pods on system nodes -- requires a separate
   # user node pool. With only 2 B2s_v2 nodes, splitting into system and user
   # pools is not cost-effective.
   - CKV_AZURE_232
 
-  # CKV_AZURE_116: Azure Policies Add-on — enterprise governance feature
+  # CKV_AZURE_116: Azure Policies Add-on -- enterprise governance feature
   # that requires Azure Policy definitions. Out of scope for this project.
   - CKV_AZURE_116
 
-  # CKV_AZURE_172: Secrets Store CSI Driver autorotation — this project uses
+  # CKV_AZURE_172: Secrets Store CSI Driver autorotation -- this project uses
   # Vault Agent Sidecar and External Secrets Operator for secret injection,
   # not the Azure Secrets Store CSI Driver.
   - CKV_AZURE_172
 
   # --- Key Vault ---
 
-  # CKV_AZURE_112: HSM-backed key — Premium SKU Key Vault with HSM keys
+  # CKV_AZURE_112: HSM-backed key -- Premium SKU Key Vault with HSM keys
   # costs significantly more. Standard SKU with software-protected keys
   # is sufficient for a dev auto-unseal key.
   - CKV_AZURE_112
 
-  # CKV2_AZURE_32: Private endpoint for Key Vault — the Key Vault is already
+  # CKV2_AZURE_32: Private endpoint for Key Vault -- the Key Vault is already
   # restricted to the AKS and Vault subnets via service endpoints. Private
   # endpoints add cost (private DNS zone + endpoint) for minimal additional
   # security in a single-VNet topology.

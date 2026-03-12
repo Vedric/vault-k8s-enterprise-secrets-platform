@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# deploy-postgresql.sh — Deploy in-cluster PostgreSQL for Vault database secrets engine
+# deploy-postgresql.sh -- Deploy in-cluster PostgreSQL for Vault database secrets engine
 #
 # This script deploys a lightweight Bitnami PostgreSQL instance in the database
 # namespace. The admin password is generated at runtime, stored securely in Vault,
@@ -37,7 +37,7 @@ Options:
   -h, --help           Show this help message
 
 Environment variables:
-  VAULT_TOKEN          Required — Vault admin token for storing the password
+  VAULT_TOKEN          Required -- Vault admin token for storing the password
   VAULT_ADDR           Vault address (default: http://127.0.0.1:8200)
   DB_NAMESPACE         Kubernetes namespace for PostgreSQL (default: database)
   VAULT_K8S_NAMESPACE  Kubernetes namespace for Vault (default: vault)
@@ -175,7 +175,7 @@ store_password_in_vault() {
     database="vault_db" \
     username="postgres" \
     password="${pg_password}" \
-    note="Managed by deploy-postgresql.sh — do not edit manually"
+    note="Managed by deploy-postgresql.sh -- do not edit manually"
 
   log "Credentials stored at secret/shared/infra/postgresql-admin."
 }

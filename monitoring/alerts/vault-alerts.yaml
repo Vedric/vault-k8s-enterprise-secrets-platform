@@ -13,7 +13,7 @@ spec:
   groups:
     - name: vault.rules
       rules:
-        # Vault is sealed — immediate action required
+        # Vault is sealed -- immediate action required
         - alert: VaultSealed
           expr: vault_core_unsealed == 0
           for: 1m
@@ -26,7 +26,7 @@ spec:
               Refer to docs/runbooks/seal-recovery.md for recovery procedures.
             runbook_url: "https://github.com/Vedric/vault-k8s-enterprise-secrets-platform/blob/main/docs/runbooks/seal-recovery.md"
 
-        # Raft cluster has lost a peer — degraded HA
+        # Raft cluster has lost a peer -- degraded HA
         - alert: VaultRaftPeerLost
           expr: vault_raft_peers < 3
           for: 5m
@@ -39,7 +39,7 @@ spec:
               The cluster can tolerate one node failure but is operating in
               degraded mode. Investigate the missing node.
 
-        # No Vault leader — split-brain or total failure
+        # No Vault leader -- split-brain or total failure
         - alert: VaultNoLeader
           expr: vault_core_active == 0
           for: 2m
@@ -81,7 +81,7 @@ spec:
               counts may indicate token leakage (applications not revoking
               tokens) or misconfigured TTLs.
 
-        # Audit log failures — compliance risk
+        # Audit log failures -- compliance risk
         - alert: VaultAuditFailure
           expr: vault_audit_log_request_failure > 0
           for: 1m

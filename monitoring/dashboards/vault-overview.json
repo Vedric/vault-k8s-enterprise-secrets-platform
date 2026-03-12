@@ -10,7 +10,7 @@
   "annotations": {
     "list": []
   },
-  "description": "HashiCorp Vault cluster overview — seal status, Raft peers, token metrics, and secret access patterns.",
+  "description": "HashiCorp Vault cluster overview -- seal status, Raft peers, token metrics, and secret access patterns.",
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,

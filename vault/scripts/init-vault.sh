@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# init-vault.sh — Initialize and configure a fresh Vault HA cluster
+# init-vault.sh -- Initialize and configure a fresh Vault HA cluster
 #
 # This script performs first-time initialization of the Vault cluster:
 # 1. Waits for all Vault pods to be running

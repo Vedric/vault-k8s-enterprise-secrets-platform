@@ -127,6 +127,12 @@ make postgresql-deploy
 
 # 10. Configure dynamic secrets (database + PKI engines)
 make vault-dynamic-secrets
+
+# 11. Deploy External Secrets Operator
+make eso-deploy
+
+# 12. Deploy sample apps (both injection patterns)
+make sample-deploy
 ```
 
 ## Project Roadmap
@@ -137,7 +143,7 @@ make vault-dynamic-secrets
 | 2 | Vault HA Deployment (Helm, Raft storage, auto-unseal, failover validation) | Complete |
 | 3 | Multi-Tenancy & Auth (KV v2 paths, HCL policies, Kubernetes auth method) | Complete |
 | 4 | Dynamic Secrets & Rotation (PostgreSQL credentials, PKI certificates) | Complete |
-| 5 | Secret Injection Patterns (Vault Agent Sidecar vs External Secrets Operator) | Planned |
+| 5 | Secret Injection Patterns (Vault Agent Sidecar vs External Secrets Operator) | Complete |
 | 6 | Observability & Testing (Audit logs, Loki + Grafana, bats test suite, CI/CD) | Planned |
 
 ## Cost Estimation (Dev Environment)
@@ -208,6 +214,7 @@ make vault-dynamic-secrets
 - [Multi-Tenancy Design](docs/multi-tenancy.md)
 - [Seal Recovery Runbook](docs/runbooks/seal-recovery.md)
 - [Dynamic Secrets Architecture](docs/dynamic-secrets.md)
+- [Secret Injection Patterns](docs/secret-injection.md)
 - [Secret Rotation Runbook](docs/runbooks/secret-rotation.md)
 
 ## License

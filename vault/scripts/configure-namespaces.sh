@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# configure-namespaces.sh — Configure Vault path-based multi-tenancy
+# configure-namespaces.sh -- Configure Vault path-based multi-tenancy
 #
 # This script sets up:
 # 1. Kubernetes team namespaces and service accounts
@@ -196,11 +196,11 @@ create_shared_secrets() {
   vault kv put secret/shared/infra/dns-config \
     internal_domain="cluster.local" \
     external_domain="example.com" \
-    note="Placeholder values — update with real configuration"
+    note="Placeholder values -- update with real configuration"
 
   vault kv put secret/shared/infra/registry-endpoint \
     registry_url="ghcr.io" \
-    note="Placeholder values — update with real configuration"
+    note="Placeholder values -- update with real configuration"
 
   log "Shared secrets structure created."
 }
@@ -252,7 +252,7 @@ verify_policy_isolation() {
     error "Policy isolation verification FAILED with ${failures} error(s)."
   fi
 
-  log "Policy isolation verification PASSED — all teams are correctly isolated."
+  log "Policy isolation verification PASSED -- all teams are correctly isolated."
 }
 
 print_summary() {

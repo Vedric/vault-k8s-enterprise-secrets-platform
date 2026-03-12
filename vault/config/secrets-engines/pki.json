@@ -22,5 +22,5 @@
       "require_cn": true
     }
   },
-  "notes": "Applied by vault/scripts/configure-dynamic-secrets.sh. Root CA directly at pki/ — no intermediate CA for dev scope."
+  "notes": "Applied by vault/scripts/configure-dynamic-secrets.sh. Root CA directly at pki/ -- no intermediate CA for dev scope."
 }

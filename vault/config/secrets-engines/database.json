@@ -24,5 +24,5 @@
       "max_ttl": "24h"
     }
   },
-  "notes": "Applied by vault/scripts/configure-dynamic-secrets.sh. Root password is rotated after initial configuration — only Vault controls it."
+  "notes": "Applied by vault/scripts/configure-dynamic-secrets.sh. Root password is rotated after initial configuration -- only Vault controls it."
 }
